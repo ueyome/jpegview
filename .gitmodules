@@ -7,13 +7,6 @@
 [submodule "extras/libwebp"]
 	path = extras/third_party/libwebp
 	url = https://chromium.googlesource.com/webm/libwebp
-[submodule "extras/libpng"]
-	path = extras/third_party/libpng-apng.src-patch/libpng
-	url = https://github.com/glennrp/libpng
-	ignore = dirty
-[submodule "extras/zlib"]
-	path = extras/third_party/libpng-apng.src-patch/zlib
-	url = https://github.com/madler/zlib
 [submodule "extras/libjxl"]
 	path = extras/third_party/libjxl
 	url = https://github.com/libjxl/libjxl/
