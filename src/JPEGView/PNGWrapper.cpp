@@ -7,6 +7,11 @@
 #include "MaxImageDef.h"
 #include <stdexcept>
 
+#define PNG_BLEND_OP_SOURCE       0
+#define PNG_BLEND_OP_OVER         1
+#define PNG_DISPOSE_OP_BACKGROUND 1
+#define PNG_DISPOSE_OP_PREVIOUS   2
+
 // Uncomment to build without APNG support
 //#undef PNG_APNG_SUPPORTED
 

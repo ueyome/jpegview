@@ -53,15 +53,15 @@ call "%~dp0vs-init.bat" %XBUILD_ARCH%
 
 pushd "%XBUILD_DIR%"
 
-cmake.exe -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -A %XPLATFORM% "%XLIB_DIR%"
+cmake.exe -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_SHARED_LIBS=ON -A %XPLATFORM% "%XLIB_DIR%"
 IF ERRORLEVEL 1 exit /b 1
-msbuild.exe /p:Platform=%XPLATFORM% /p:configuration="Release" LIBJXL.sln /t:jxl_dec /t:jxl_threads
+msbuild.exe /p:Platform=%XPLATFORM% /p:configuration="Release" LIBJXL.slnx /t:jxl_dec /t:jxl_threads
 IF ERRORLEVEL 1 exit /b 1
 
 popd
 
 REM copy the libs over
-copy /y "%XBUILD_DIR%\Release\jxl*.dll" "%XSRC_DIR%\JPEGView\libjxl\bin%XJPV_ARCH_PATH%\"
+copy /y "%XBUILD_DIR%\lib\Release\jxl*.dll" "%XSRC_DIR%\JPEGView\libjxl\bin%XJPV_ARCH_PATH%\"
 IF ERRORLEVEL 1 exit /b 1
 copy /y "%XBUILD_DIR%\third_party\brotli\Release\brotli*.dll" "%XSRC_DIR%\JPEGView\libjxl\bin%XJPV_ARCH_PATH%\"
 IF ERRORLEVEL 1 exit /b 1

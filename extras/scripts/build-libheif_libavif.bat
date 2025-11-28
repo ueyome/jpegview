@@ -46,8 +46,8 @@ python.exe -m pip install -U meson ninja
 REM libavif only depends on dav1d
 REM libheif depends on dav1d and libde
 
-call :BUILD_COPY_DAV1D x86 ""
-IF ERRORLEVEL 1 exit /b 1
+REM call :BUILD_COPY_DAV1D x86 ""
+REM IF ERRORLEVEL 1 exit /b 1
 call :BUILD_COPY_LIBAVIF x86 ""
 IF ERRORLEVEL 1 exit /b 1
 call :BUILD_COPY_LIBDE x86 Win32 ""
@@ -56,8 +56,8 @@ call :BUILD_COPY_LIBHEIF x86 Win32 ""
 IF ERRORLEVEL 1 exit /b 1
 
 
-call :BUILD_COPY_DAV1D x64 "64"
-IF ERRORLEVEL 1 exit /b 1
+REM call :BUILD_COPY_DAV1D x64 "64"
+REM IF ERRORLEVEL 1 exit /b 1
 call :BUILD_COPY_LIBAVIF x64 "64"
 IF ERRORLEVEL 1 exit /b 1
 call :BUILD_COPY_LIBDE x64 x64 "64"
@@ -149,7 +149,7 @@ call "%~dp0vs-init.bat" %1
 pushd "%XBUILD_DIR%"
 cmake.exe -DCMAKE_BUILD_TYPE=Release -A %2 "%XLIB_DIR%"
 IF ERRORLEVEL 1 exit /b 1
-msbuild.exe /p:Platform=%2 /p:configuration="Release" libde265.sln /t:de265
+msbuild.exe /p:Platform=%2 /p:configuration="Release" libde265.slnx /t:de265
 IF ERRORLEVEL 1 exit /b 1
 
 
@@ -192,9 +192,9 @@ IF ERRORLEVEL 1 exit /b 1
 
 pushd "%XBUILD_DIR%"
 
-cmake.exe -DCMAKE_BUILD_TYPE=Release -A %2 -DDAV1D_LIBRARY="%XDAV1D_DIST%\lib\dav1d.lib" -DDAV1D_INCLUDE_DIR="%XDAV1D_DIST%\include" -DLIBDE265_LIBRARY="%XDE265_BUILD%\libde265\Release\de265.lib" -DLIBDE265_INCLUDE_DIR="%XDE265_DIR%" "%XLIB_DIR%\libheif"
+cmake.exe -DCMAKE_BUILD_TYPE=Release -A %2 -DLIBDE265_LIBRARY="%XDE265_BUILD%\libde265\Release\de265.lib" -DLIBDE265_INCLUDE_DIR="%XDE265_DIR%" "%XLIB_DIR%\libheif"
 IF ERRORLEVEL 1 exit /b 1
-msbuild.exe /p:Platform=%2 /p:configuration="Release" libheif.sln /t:heif
+msbuild.exe /p:Platform=%2 /p:configuration="Release" libheif.slnx /t:heif
 IF ERRORLEVEL 1 exit /b 1
 
 popd
@@ -239,7 +239,7 @@ REM not sure if there's any diff using nmake vs ninja
 
 REM derived from https://github.com/AOMediaCodec/libavif/blob/main/.github/workflows/ci-windows.yml
 ::cmake.exe -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DAVIF_CODEC_DAV1D=ON -DDAV1D_LIBRARY="%XDAV1D_DIST%\lib\dav1d.lib" -DDAV1D_INCLUDE_DIR="%XDAV1D_DIST%\include" "%XLIBAVIF_DIR%"
-cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Release -DAVIF_CODEC_DAV1D=ON -DDAV1D_LIBRARY="%XDAV1D_DIST%\lib\dav1d.lib" -DDAV1D_INCLUDE_DIR="%XDAV1D_DIST%\include" "%XLIBAVIF_DIR%"
+cmake.exe -G Ninja -DCMAKE_BUILD_TYPE=Release -DAVIF_LIBYUV=OFF -DBUILD_SHARED_LIBS=ON -DAVIF_CODEC_DAV1D=LOCAL "%XLIBAVIF_DIR%"
 IF ERRORLEVEL 1 exit /b 1
 ::nmake.exe
 ninja.exe
@@ -334,7 +334,7 @@ REM if you try to just include the extra directory, bad things happen since ther
 copy /y "%XDE265_DIR%\extra\libde265\de265-version.h" "%XDE265_DIR%\libde265"
 
 REM for static dav1d:  cmake.exe -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DDAV1D_LIBRARY="%XDAV1D_DIST%\lib\libdav1d.a" -DDAV1D_INCLUDE_DIR="%XDAV1D_DIST%\include" -DLIBDE265_LIBRARY="%XDE265_DIR%\bin_%XARCH%\lib\libde265.lib" -DLIBDE265_INCLUDE_DIR="%XDE265_DIR%" "%XLIB_DIR%\libheif"
-cmake.exe -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DDAV1D_LIBRARY="%XDAV1D_DIST%\lib\dav1d.lib" -DDAV1D_INCLUDE_DIR="%XDAV1D_DIST%\include" -DLIBDE265_LIBRARY="%XDE265_DIR%\bin_%XARCH%\lib\libde265.lib" -DLIBDE265_INCLUDE_DIR="%XDE265_DIR%" "%XLIB_DIR%\libheif"
+cmake.exe -G"NMake Makefiles" -DCMAKE_BUILD_TYPE=Release -DLIBDE265_LIBRARY="%XDE265_DIR%\bin_%XARCH%\lib\libde265.lib" -DLIBDE265_INCLUDE_DIR="%XDE265_DIR%" "%XLIB_DIR%\libheif"
 IF ERRORLEVEL 1 exit /b 1
 nmake.exe
 IF ERRORLEVEL 1 exit /b 1

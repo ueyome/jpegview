@@ -759,6 +759,9 @@ LRESULT CMainDlg::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 		bool bDraggingRequired = m_virtualImageSize.cx > m_clientRect.Width() || m_virtualImageSize.cy > m_clientRect.Height();
 		bool bHandleByCropping = isCropping || m_pCropCtl->HitHandle(pointClicked.x, pointClicked.y) != CCropCtl::HH_None;
 		bool bTransformPanelShown = m_pRotationPanelCtl->IsVisible() || m_pTiltCorrectionPanelCtl->IsVisible();
+		// 新增：额外判断
+		bool bExtraCheck = false;
+
 		if (bHandleByCropping || !m_pZoomNavigatorCtl->OnMouseLButton(MouseEvent_BtnDown, pointClicked.x, pointClicked.y)) {
 			if (!m_bZoomModeOnLeftMouse && !bHandleByCropping && HandleMouseButtonByKeymap(VK_LBUTTON)) {
 				return 0;
@@ -768,14 +771,27 @@ LRESULT CMainDlg::OnLButtonDown(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
 				m_bZoomMode = true;
 				m_dStartZoom = m_dZoom;
 				m_nCapturedX = m_nMouseX; m_nCapturedY = m_nMouseY;
+				bExtraCheck = true;
 			} else if ((bCtrl || bHandleByCropping || (!bDraggingRequired && m_bDefaultSelectionMode)) && !bTransformPanelShown) {
 				// always go into selection/crop when in the right state and CTRL held down, otherwise it depends on the DefaultSelectionMode setting
 				m_bSelectZoom = bShift;  // if shift, go into select-to-zoom mode (no crop popup)
 				m_pCropCtl->StartCropping(pointClicked.x, pointClicked.y);
+				bExtraCheck = true;
 			} else if (bDraggingRequired && !bTransformPanelShown) {
 				StartDragging(pointClicked.x, pointClicked.y, false);
+				bExtraCheck = true;
 			} 
+		} else {
+			bExtraCheck = true;
 		}
+
+		// 如果没有被其他任何操作处理，且不在全屏模式，则拖动窗口
+		if (!bExtraCheck && !m_bFullScreenMode && !bTransformPanelShown && !m_pUnsharpMaskPanelCtl->IsVisible()) {
+			::ReleaseCapture();
+			::SendMessage(m_hWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
+			return 0;
+		}
+		
 		SetCursorForMoveSection();
 	}
 
